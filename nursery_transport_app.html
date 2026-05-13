@@ -1,0 +1,2388 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>روضة الشهيد أعمر حمداش - نظام النقل</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e3a5f">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-light: #2c5282;
+            --secondary: #e67e22;
+            --accent: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius: 16px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Splash Screen */
+        #splash {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        #splash.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-logo {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .splash-logo img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        .splash-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-top: 24px;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .splash-subtitle {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-top: 32px;
+            overflow: hidden;
+        }
+
+        .loading-bar-fill {
+            height: 100%;
+            background: var(--secondary);
+            border-radius: 2px;
+            animation: loading 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes loading {
+            0% { width: 0%; margin-left: 0; }
+            50% { width: 100%; margin-left: 0; }
+            100% { width: 0%; margin-left: 100%; }
+        }
+
+        /* Auth Screen */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+
+        .auth-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-logo img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+        }
+
+        .auth-logo h1 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-top: 12px;
+            font-weight: 800;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--bg);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 95, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .auth-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 0.85rem;
+        }
+
+        .auth-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .role-option {
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .role-option:hover, .role-option.active {
+            border-color: var(--primary);
+            background: rgba(30, 58, 95, 0.05);
+        }
+
+        .role-option i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .role-option span {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* App Layout */
+        .app-layout {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .app-layout.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-brand img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .header-brand h2 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .header-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* Content Area */
+        .app-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            padding-bottom: 100px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+        }
+
+        .bg-primary { background: var(--primary); }
+        .bg-secondary { background: var(--secondary); }
+        .bg-success { background: var(--accent); }
+        .bg-danger { background: var(--danger); }
+        .bg-warning { background: var(--warning); }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        /* Children List */
+        .child-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--card);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .child-item:hover {
+            transform: translateX(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .child-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+        }
+
+        .child-info {
+            flex: 1;
+        }
+
+        .child-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .child-meta {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .child-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .child-action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .child-action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            z-index: 100;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            padding: 4px 16px;
+            border-radius: var(--radius-sm);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item i {
+            font-size: 1.3rem;
+        }
+
+        .nav-item span {
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-footer .btn {
+            flex: 1;
+        }
+
+        /* Dev Panel */
+        .dev-panel-trigger {
+            position: fixed;
+            top: 50%;
+            left: -30px;
+            width: 60px;
+            height: 60px;
+            background: var(--danger);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .dev-panel-trigger:hover {
+            left: 10px;
+        }
+
+        .dev-panel-trigger i {
+            font-size: 1.2rem;
+            margin-right: -10px;
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-label {
+            font-weight: 600;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: var(--border);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            right: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active::after {
+            right: 26px;
+        }
+
+        /* Map Container */
+        .map-container {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-placeholder {
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .map-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 8px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .quick-action {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 16px 8px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .quick-action i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .quick-action span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Contact Buttons */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .contact-btn {
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .contact-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .contact-call { background: var(--primary); }
+        .contact-whatsapp { background: #25d366; }
+
+        /* Hidden */
+        .hidden { display: none !important; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Search Bar */
+        .search-bar {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background: var(--card);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary);
+            background: rgba(30, 58, 95, 0.02);
+        }
+
+        .file-upload i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .quick-actions {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            color: var(--border);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-success {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--accent);
+        }
+
+        .badge-warning {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--warning);
+        }
+
+        /* Grid for settings */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .setting-card {
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .setting-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .setting-card i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .setting-card span {
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash">
+        <div class="splash-logo">
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                <circle cx="40" cy="40" r="36" fill="#1e3a5f"/>
+                <path d="M40 20 C30 20 25 30 25 40 C25 50 30 55 40 60 C50 55 55 50 55 40 C55 30 50 20 40 20Z" fill="white" opacity="0.9"/>
+                <circle cx="32" cy="36" r="3" fill="#1e3a5f"/>
+                <circle cx="48" cy="36" r="3" fill="#1e3a5f"/>
+                <path d="M35 45 Q40 50 45 45" stroke="#1e3a5f" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <path d="M20 55 L25 45 L30 50 L35 42 L40 48 L45 42 L50 50 L55 45 L60 55" stroke="white" stroke-width="2" fill="none" opacity="0.6"/>
+            </svg>
+        </div>
+        <div class="splash-title">روضة الشهيد أعمر حمداش</div>
+        <div class="splash-subtitle">نظام إدارة النقل الذكي</div>
+        <div class="loading-bar">
+            <div class="loading-bar-fill"></div>
+        </div>
+    </div>
+
+    <!-- Auth Screen -->
+    <div id="authScreen" class="auth-container hidden">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                    <circle cx="40" cy="40" r="36" fill="#1e3a5f"/>
+                    <path d="M40 20 C30 20 25 30 25 40 C25 50 30 55 40 60 C50 55 55 50 55 40 C55 30 50 20 40 20Z" fill="white" opacity="0.9"/>
+                    <circle cx="32" cy="36" r="3" fill="#1e3a5f"/>
+                    <circle cx="48" cy="36" r="3" fill="#1e3a5f"/>
+                    <path d="M35 45 Q40 50 45 45" stroke="#1e3a5f" stroke-width="2" fill="none" stroke-linecap="round"/>
+                </svg>
+                <h1>تسجيل الدخول</h1>
+            </div>
+
+            <div class="role-selector" id="roleSelector">
+                <div class="role-option active" data-role="admin">
+                    <i class="fas fa-user-shield"></i>
+                    <span>مدير</span>
+                </div>
+                <div class="role-option" data-role="supervisor">
+                    <i class="fas fa-user-tie"></i>
+                    <span>مشرف</span>
+                </div>
+                <div class="role-option" data-role="driver">
+                    <i class="fas fa-bus"></i>
+                    <span>سائق</span>
+                </div>
+                <div class="role-option" data-role="parent">
+                    <i class="fas fa-users"></i>
+                    <span>ولي أمر</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">اسم المستخدم</label>
+                <input type="text" class="form-input" id="username" placeholder="أدخل اسم المستخدم">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">كلمة المرور</label>
+                <input type="password" class="form-input" id="password" placeholder="أدخل كلمة المرور">
+            </div>
+
+            <button class="btn btn-primary" onclick="handleLogin()">
+                <i class="fas fa-sign-in-alt"></i>
+                دخول
+            </button>
+
+            <div class="auth-links">
+                <a href="#" onclick="showForgotPassword()">نسيت كلمة المرور؟</a>
+                <a href="#" onclick="showDevLogin()" style="opacity: 0.3;">المطور</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dev Login Modal -->
+    <div class="modal-overlay" id="devLoginModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-code"></i> دخول المطور</div>
+                <button class="modal-close" onclick="closeModal('devLoginModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">رمز الدخول السري</label>
+                    <input type="password" class="form-input" id="devCode" placeholder="أدخل الرمز السري">
+                </div>
+                <p style="color: var(--text-light); font-size: 0.85rem; margin-top: 12px;">
+                    <i class="fas fa-info-circle"></i>
+                    الرمز الافتراضي: dev2024
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('devLoginModal')">إلغاء</button>
+                <button class="btn btn-danger" onclick="handleDevLogin()">دخول</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal-overlay" id="forgotModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-key"></i> استرجاع الحساب</div>
+                <button class="modal-close" onclick="closeModal('forgotModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">رقم الهاتف أو البريد الإلكتروني</label>
+                    <input type="text" class="form-input" id="recoveryContact" placeholder="أدخل بيانات الاتصال">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الدور</label>
+                    <select class="form-input" id="recoveryRole">
+                        <option value="admin">مدير</option>
+                        <option value="supervisor">مشرف</option>
+                        <option value="driver">سائق</option>
+                        <option value="parent">ولي أمر</option>
+                    </select>
+                </div>
+                <p style="color: var(--text-light); font-size: 0.85rem; margin-top: 12px;">
+                    <i class="fas fa-info-circle"></i>
+                    سيتم إرسال رمز التحقق إلى هاتفك
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('forgotModal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="handleRecovery()">إرسال</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appLayout" class="app-layout">
+        <header class="app-header">
+            <div class="header-brand">
+                <img id="appLogo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='18' fill='%231e3a5f'/%3E%3C/svg%3E" alt="Logo">
+                <h2 id="appTitle">روضة الشهيد أعمر حمداش</h2>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" onclick="toggleNotifications()">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <button class="header-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="app-content" id="mainContent">
+            <!-- Content injected by JS -->
+        </main>
+
+        <nav class="bottom-nav" id="bottomNav">
+            <!-- Nav items injected by JS -->
+        </nav>
+    </div>
+
+    <!-- Dev Panel Trigger -->
+    <button class="dev-panel-trigger" id="devTrigger" onclick="showDevPanel()" title="لوحة التطوير">
+        <i class="fas fa-cog"></i>
+    </button>
+
+    <!-- Dev Panel Modal -->
+    <div class="modal-overlay" id="devPanelModal">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-code"></i> لوحة التطوير</div>
+                <button class="modal-close" onclick="closeModal('devPanelModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="section-title"><i class="fas fa-palette"></i> العلامة التجارية</div>
+                <div class="card">
+                    <div class="form-group">
+                        <label class="form-label">اسم الروضة</label>
+                        <input type="text" class="form-input" id="devNurseryName" value="روضة الشهيد أعمر حمداش">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">شعار الروضة</label>
+                        <div class="file-upload" onclick="document.getElementById('devLogoInput').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <div>انقر لاختيار الشعار</div>
+                            <input type="file" id="devLogoInput" accept="image/*" style="display:none" onchange="handleLogoChange(this)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">اللون الرئيسي</label>
+                        <input type="color" class="form-input" id="devPrimaryColor" value="#1e3a5f" style="height: 50px; cursor: pointer;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">اللون الثانوي</label>
+                        <input type="color" class="form-input" id="devSecondaryColor" value="#e67e22" style="height: 50px; cursor: pointer;">
+                    </div>
+                </div>
+
+                <div class="section-title"><i class="fas fa-database"></i> قاعدة البيانات</div>
+                <div class="card">
+                    <div class="settings-grid">
+                        <div class="setting-card" onclick="exportToExcel()">
+                            <i class="fas fa-file-excel" style="color: #27ae60;"></i>
+                            <span>تصدير Excel</span>
+                        </div>
+                        <div class="setting-card" onclick="document.getElementById('importExcel').click()">
+                            <i class="fas fa-upload" style="color: #3498db;"></i>
+                            <span>استيراد Excel</span>
+                            <input type="file" id="importExcel" accept=".xlsx,.xls,.csv" style="display:none" onchange="importFromExcel(this)">
+                        </div>
+                        <div class="setting-card" onclick="syncToCloud()">
+                            <i class="fas fa-cloud-upload-alt" style="color: #9b59b6;"></i>
+                            <span>مزامنة سحابية</span>
+                        </div>
+                        <div class="setting-card" onclick="syncToLocal()">
+                            <i class="fas fa-save" style="color: #e67e22;"></i>
+                            <span>حفظ محلي</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title"><i class="fas fa-users-cog"></i> إدارة المستخدمين</div>
+                <div class="card">
+                    <div class="form-group">
+                        <label class="form-label">إضافة مستخدم جديد</label>
+                        <input type="text" class="form-input" id="newUserName" placeholder="اسم المستخدم">
+                    </div>
+                    <div class="form-group">
+                        <select class="form-input" id="newUserRole">
+                            <option value="admin">مدير</option>
+                            <option value="supervisor">مشرف</option>
+                            <option value="driver">سائق</option>
+                            <option value="parent">ولي أمر</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="newUserPass" placeholder="كلمة المرور">
+                    </div>
+                    <button class="btn btn-primary" onclick="addNewUser()">
+                        <i class="fas fa-plus"></i> إضافة مستخدم
+                    </button>
+                </div>
+
+                <div class="section-title"><i class="fas fa-eye"></i> إظهار/إخفاء الحقول</div>
+                <div class="card">
+                    <div class="toggle-group">
+                        <span class="toggle-label">إظهار رقم الهاتف</span>
+                        <div class="toggle-switch active" onclick="toggleField(this, 'phone')"></div>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">إظهار العنوان</span>
+                        <div class="toggle-switch active" onclick="toggleField(this, 'address')"></div>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">إظهار صورة الطفل</span>
+                        <div class="toggle-switch active" onclick="toggleField(this, 'photo')"></div>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">إظهار معلومات الوالدين</span>
+                        <div class="toggle-switch active" onclick="toggleField(this, 'parents')"></div>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">إظهار الرقم التعريفي</span>
+                        <div class="toggle-switch" onclick="toggleField(this, 'id')"></div>
+                    </div>
+                </div>
+
+                <div class="section-title"><i class="fas fa-map-marked-alt"></i> الإعدادات المتقدمة</div>
+                <div class="card">
+                    <div class="form-group">
+                        <label class="form-label">مفتاح Google Maps API</label>
+                        <input type="text" class="form-input" id="mapsApiKey" placeholder="AIzaSy...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">مفتاح Supabase</label>
+                        <input type="text" class="form-input" id="supabaseKey" placeholder="eyJ...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">رابط Supabase</label>
+                        <input type="text" class="form-input" id="supabaseUrl" placeholder="https://...supabase.co">
+                    </div>
+                    <button class="btn btn-success" onclick="saveDevSettings()">
+                        <i class="fas fa-save"></i> حفظ الإعدادات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Child Modal -->
+    <div class="modal-overlay" id="childModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="childModalTitle"><i class="fas fa-child"></i> إضافة طفل</div>
+                <button class="modal-close" onclick="closeModal('childModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img id="childPhotoPreview" src="https://via.placeholder.com/100" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary);">
+                    <br><br>
+                    <button class="btn btn-outline" style="width: auto; padding: 8px 16px;" onclick="document.getElementById('childPhotoInput').click()">
+                        <i class="fas fa-camera"></i> تغيير الصورة
+                    </button>
+                    <input type="file" id="childPhotoInput" accept="image/*" style="display:none" onchange="previewChildPhoto(this)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الاسم الكامل</label>
+                    <input type="text" class="form-input" id="childName" placeholder="اسم الطفل الكامل">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">العمر</label>
+                    <input type="number" class="form-input" id="childAge" placeholder="العمر بالسنوات">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">العنوان</label>
+                    <input type="text" class="form-input" id="childAddress" placeholder="عنوان المنزل">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">رقم هاتف الوالد</label>
+                    <input type="tel" class="form-input" id="childPhone" placeholder="05XX XX XX XX">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">رقم واتساب</label>
+                    <input type="tel" class="form-input" id="childWhatsapp" placeholder="05XX XX XX XX">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">اسم الأب</label>
+                    <input type="text" class="form-input" id="childFather" placeholder="اسم الأب">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">اسم الأم</label>
+                    <input type="text" class="form-input" id="childMother" placeholder="اسم الأم">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ملاحظات</label>
+                    <textarea class="form-input" id="childNotes" rows="3" placeholder="أي ملاحظات خاصة..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('childModal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="saveChild()">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Child Details Modal -->
+    <div class="modal-overlay" id="childDetailsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-id-card"></i> تفاصيل الطفل</div>
+                <button class="modal-close" onclick="closeModal('childDetailsModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="childDetailsBody">
+                <!-- Injected by JS -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('childDetailsModal')">إغلاق</button>
+                <button class="btn btn-primary" onclick="editCurrentChild()">
+                    <i class="fas fa-edit"></i> تعديل
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ===================== DATA STORE =====================
+        const Store = {
+            currentUser: null,
+            currentRole: 'admin',
+            currentChildId: null,
+            fieldVisibility: {
+                phone: true,
+                address: true,
+                photo: true,
+                parents: true,
+                id: false
+            },
+            branding: {
+                name: 'روضة الشهيد أعمر حمداش',
+                primaryColor: '#1e3a5f',
+                secondaryColor: '#e67e22',
+                logo: null
+            },
+            users: [
+                { id: 1, username: 'admin', password: 'admin123', role: 'admin', name: 'المدير العام' },
+                { id: 2, username: 'supervisor', password: 'super123', role: 'supervisor', name: 'المشرفة فاطمة' },
+                { id: 3, username: 'driver', password: 'driver123', role: 'driver', name: 'السائق أحمد' },
+                { id: 4, username: 'parent', password: 'parent123', role: 'parent', name: 'ولي الأمر' }
+            ],
+            children: [
+                { id: 1, name: 'محمد أحمد', age: 4, address: 'حي النصر، شارع 1', phone: '0555123456', whatsapp: '0555123456', father: 'أحمد محمد', mother: 'فاطمة علي', photo: null, notes: 'حساسية من الفول السوداني', lat: 36.7538, lng: 3.0588 },
+                { id: 2, name: 'سارة خالد', age: 5, address: 'حي المطار، شارع 5', phone: '0555234567', whatsapp: '0555234567', father: 'خالد عمر', mother: 'نورة سالم', photo: null, notes: '', lat: 36.7638, lng: 3.0688 },
+                { id: 3, name: 'عمر يوسف', age: 3, address: 'حي البدر، شارع 12', phone: '0555345678', whatsapp: '0555345678', father: 'يوسف إبراهيم', mother: 'ليلى حسن', photo: null, notes: 'يحتاج إلى مقعد مخصص', lat: 36.7438, lng: 3.0488 }
+            ],
+            routes: [
+                { id: 1, name: 'الطريق الرئيسي', waypoints: [{lat: 36.7538, lng: 3.0588}, {lat: 36.7638, lng: 3.0688}, {lat: 36.7438, lng: 3.0488}], driverId: 3 }
+            ],
+            notifications: [
+                { id: 1, title: 'وصول الطفل محمد', message: 'تم توصيل محمد إلى المنزل بنجاح', time: '10:30', read: false },
+                { id: 2, title: 'تأخر الحافلة', message: 'الحافلة متأخرة 10 دقائق بسبب الازدحام', time: '09:15', read: false }
+            ]
+        };
+
+        // ===================== INIT =====================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            setTimeout(() => {
+                document.getElementById('splash').classList.add('hidden');
+                document.getElementById('authScreen').classList.remove('hidden');
+            }, 2500);
+
+            // Role selector
+            document.querySelectorAll('.role-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    document.querySelectorAll('.role-option').forEach(o => o.classList.remove('active'));
+                    opt.classList.add('active');
+                    Store.currentRole = opt.dataset.role;
+                });
+            });
+        });
+
+        // ===================== AUTH =====================
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                showToast('يرجى إدخال اسم المستخدم وكلمة المرور');
+                return;
+            }
+
+            const user = Store.users.find(u => u.username === username && u.password === password);
+            if (user) {
+                Store.currentUser = user;
+                Store.currentRole = user.role;
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('appLayout').classList.add('active');
+                initApp();
+                showToast('مرحباً ' + user.name);
+            } else {
+                showToast('خطأ في اسم المستخدم أو كلمة المرور');
+            }
+        }
+
+        function showDevLogin() {
+            document.getElementById('devLoginModal').classList.add('active');
+        }
+
+        function handleDevLogin() {
+            const code = document.getElementById('devCode').value;
+            if (code === 'dev2024') {
+                closeModal('devLoginModal');
+                Store.currentUser = { id: 0, username: 'dev', role: 'dev', name: 'المطور' };
+                Store.currentRole = 'dev';
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('appLayout').classList.add('active');
+                document.getElementById('devTrigger').style.display = 'flex';
+                initApp();
+                showToast('وضع المطور مفعل');
+            } else {
+                showToast('رمز خاطئ');
+            }
+        }
+
+        function showForgotPassword() {
+            document.getElementById('forgotModal').classList.add('active');
+        }
+
+        function handleRecovery() {
+            const contact = document.getElementById('recoveryContact').value;
+            if (!contact) {
+                showToast('أدخل بيانات الاتصال');
+                return;
+            }
+            closeModal('forgotModal');
+            showToast('تم إرسال رمز التحقق إلى ' + contact);
+        }
+
+        function logout() {
+            Store.currentUser = null;
+            Store.currentRole = 'admin';
+            document.getElementById('appLayout').classList.remove('active');
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            showToast('تم تسجيل الخروج');
+        }
+
+        // ===================== APP INIT =====================
+        function initApp() {
+            updateBranding();
+            renderNav();
+            navigateTo('dashboard');
+
+            // Show dev trigger only for dev/admin
+            if (Store.currentRole === 'dev' || Store.currentRole === 'admin') {
+                document.getElementById('devTrigger').style.display = 'flex';
+            } else {
+                document.getElementById('devTrigger').style.display = 'none';
+            }
+        }
+
+        function updateBranding() {
+            document.getElementById('appTitle').textContent = Store.branding.name;
+            if (Store.branding.logo) {
+                document.getElementById('appLogo').src = Store.branding.logo;
+            }
+            document.documentElement.style.setProperty('--primary', Store.branding.primaryColor);
+            document.documentElement.style.setProperty('--secondary', Store.branding.secondaryColor);
+        }
+
+        // ===================== NAVIGATION =====================
+        const navConfig = {
+            admin: [
+                { id: 'dashboard', icon: 'fa-home', label: 'الرئيسية' },
+                { id: 'children', icon: 'fa-child', label: 'الأطفال' },
+                { id: 'routes', icon: 'fa-route', label: 'الطرق' },
+                { id: 'settings', icon: 'fa-cog', label: 'الإعدادات' }
+            ],
+            supervisor: [
+                { id: 'dashboard', icon: 'fa-home', label: 'الرئيسية' },
+                { id: 'children', icon: 'fa-child', label: 'الأطفال' },
+                { id: 'attendance', icon: 'fa-clipboard-check', label: 'الحضور' },
+                { id: 'settings', icon: 'fa-cog', label: 'الإعدادات' }
+            ],
+            driver: [
+                { id: 'driverDashboard', icon: 'fa-bus', label: 'رحلتي' },
+                { id: 'children', icon: 'fa-child', label: 'ركابي' },
+                { id: 'map', icon: 'fa-map', label: 'الخريطة' },
+                { id: 'settings', icon: 'fa-cog', label: 'الإعدادات' }
+            ],
+            parent: [
+                { id: 'parentDashboard', icon: 'fa-home', label: 'الرئيسية' },
+                { id: 'tracking', icon: 'fa-map-marker-alt', label: 'التتبع' },
+                { id: 'contacts', icon: 'fa-phone', label: 'الاتصال' },
+                { id: 'settings', icon: 'fa-cog', label: 'الإعدادات' }
+            ],
+            dev: [
+                { id: 'dashboard', icon: 'fa-home', label: 'الرئيسية' },
+                { id: 'children', icon: 'fa-child', label: 'الأطفال' },
+                { id: 'routes', icon: 'fa-route', label: 'الطرق' },
+                { id: 'settings', icon: 'fa-cog', label: 'الإعدادات' }
+            ]
+        };
+
+        function renderNav() {
+            const nav = document.getElementById('bottomNav');
+            const items = navConfig[Store.currentRole] || navConfig.admin;
+            nav.innerHTML = items.map(item => `
+                <div class="nav-item ${item.id === 'dashboard' || item.id === 'driverDashboard' || item.id === 'parentDashboard' ? 'active' : ''}" 
+                     onclick="navigateTo('${item.id}')" data-page="${item.id}">
+                    <i class="fas ${item.icon}"></i>
+                    <span>${item.label}</span>
+                </div>
+            `).join('');
+        }
+
+        function navigateTo(page) {
+            // Update nav active state
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.page === page);
+            });
+
+            const content = document.getElementById('mainContent');
+            content.innerHTML = '';
+            content.classList.remove('fade-in');
+            void content.offsetWidth; // Trigger reflow
+            content.classList.add('fade-in');
+
+            switch(page) {
+                case 'dashboard':
+                case 'driverDashboard':
+                case 'parentDashboard':
+                    renderDashboard(content);
+                    break;
+                case 'children':
+                    renderChildren(content);
+                    break;
+                case 'routes':
+                    renderRoutes(content);
+                    break;
+                case 'map':
+                    renderMap(content);
+                    break;
+                case 'tracking':
+                    renderTracking(content);
+                    break;
+                case 'contacts':
+                    renderContacts(content);
+                    break;
+                case 'attendance':
+                    renderAttendance(content);
+                    break;
+                case 'settings':
+                    renderSettings(content);
+                    break;
+            }
+        }
+
+        // ===================== DASHBOARD =====================
+        function renderDashboard(container) {
+            const isDriver = Store.currentRole === 'driver';
+            const isParent = Store.currentRole === 'parent';
+
+            let html = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${Store.children.length}</div>
+                        <div class="stat-label">عدد الأطفال</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${Store.routes.length}</div>
+                        <div class="stat-label">الطرق النشطة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${Store.users.filter(u => u.role === 'driver').length}</div>
+                        <div class="stat-label">السائقين</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">الحافلات</div>
+                    </div>
+                </div>
+            `;
+
+            if (isDriver) {
+                html += `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-route"></i> رحلة اليوم</div>
+                            <div class="card-icon bg-primary"><i class="fas fa-bus"></i></div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span>التقدم</span>
+                                <span style="font-weight: 700;">2/3</span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
+                                <div style="width: 66%; height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-success" style="flex: 1;" onclick="startRoute()">
+                                <i class="fas fa-play"></i> بدء الرحلة
+                            </button>
+                            <button class="btn btn-danger" style="flex: 1;" onclick="endRoute()">
+                                <i class="fas fa-stop"></i> إنهاء
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="section-title"><i class="fas fa-users"></i> ركاب اليوم</div>
+                `;
+            } else if (isParent) {
+                html += `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-clock"></i> حالة النقل</div>
+                            <div class="card-icon bg-success"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div style="text-align: center; padding: 20px;">
+                            <div style="font-size: 3rem; color: var(--accent); margin-bottom: 12px;">
+                                <i class="fas fa-bus"></i>
+                            </div>
+                            <div style="font-weight: 700; font-size: 1.1rem;">الحافلة في الطريق</div>
+                            <div style="color: var(--text-light); margin-top: 8px;">الوصول المتوقع: 10 دقائق</div>
+                        </div>
+                        <button class="btn btn-primary" onclick="navigateTo('tracking')">
+                            <i class="fas fa-map-marker-alt"></i> تتبع الموقع
+                        </button>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="quick-actions">
+                        <button class="quick-action" onclick="showAddChild()">
+                            <i class="fas fa-plus" style="color: var(--accent);"></i>
+                            <span>إضافة طفل</span>
+                        </button>
+                        <button class="quick-action" onclick="navigateTo('routes')">
+                            <i class="fas fa-route" style="color: var(--primary);"></i>
+                            <span>تخطيط الطريق</span>
+                        </button>
+                        <button class="quick-action" onclick="showDevPanel()">
+                            <i class="fas fa-cogs" style="color: var(--danger);"></i>
+                            <span>الإعدادات</span>
+                        </button>
+                        <button class="quick-action" onclick="exportToExcel()">
+                            <i class="fas fa-file-excel" style="color: #27ae60;"></i>
+                            <span>تصدير البيانات</span>
+                        </button>
+                    </div>
+                `;
+            }
+
+            // Recent children
+            html += `<div class="section-title"><i class="fas fa-list"></i> ${isDriver ? 'قائمة الركاب' : 'آخر التحديثات'}</div>`;
+
+            Store.children.slice(0, 3).forEach(child => {
+                html += renderChildItem(child);
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderChildItem(child) {
+            const showPhoto = Store.fieldVisibility.photo;
+            const showAddress = Store.fieldVisibility.address;
+
+            return `
+                <div class="child-item" onclick="showChildDetails(${child.id})">
+                    ${showPhoto ? `
+                        <img src="${child.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(child.name) + '&background=1e3a5f&color=fff&size=128'}" 
+                             class="child-avatar" alt="${child.name}">
+                    ` : ''}
+                    <div class="child-info">
+                        <div class="child-name">${child.name}</div>
+                        <div class="child-meta">
+                            ${showAddress ? `<i class="fas fa-map-marker-alt"></i> ${child.address} • ` : ''}
+                            <i class="fas fa-birthday-cake"></i> ${child.age} سنوات
+                        </div>
+                    </div>
+                    <div class="child-actions" onclick="event.stopPropagation()">
+                        <a href="tel:${child.phone}" class="child-action-btn bg-primary" title="اتصال">
+                            <i class="fas fa-phone"></i>
+                        </a>
+                        <a href="https://wa.me/${child.whatsapp.replace(/^0/, '+213')}" class="child-action-btn bg-success" title="واتساب">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===================== CHILDREN =====================
+        function renderChildren(container) {
+            let html = `
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchChildren" placeholder="البحث في الأطفال..." oninput="filterChildren()">
+                </div>
+            `;
+
+            if (Store.currentRole === 'admin' || Store.currentRole === 'supervisor' || Store.currentRole === 'dev') {
+                html += `
+                    <button class="btn btn-primary" style="margin-bottom: 16px;" onclick="showAddChild()">
+                        <i class="fas fa-plus"></i> إضافة طفل جديد
+                    </button>
+                `;
+            }
+
+            html += `<div id="childrenList">`;
+            Store.children.forEach(child => {
+                html += renderChildItem(child);
+            });
+            html += `</div>`;
+
+            container.innerHTML = html;
+        }
+
+        function filterChildren() {
+            const query = document.getElementById('searchChildren').value.toLowerCase();
+            const filtered = Store.children.filter(c => c.name.toLowerCase().includes(query) || c.address.includes(query));
+            const list = document.getElementById('childrenList');
+            list.innerHTML = filtered.map(child => renderChildItem(child)).join('');
+        }
+
+        function showAddChild() {
+            Store.currentChildId = null;
+            document.getElementById('childModalTitle').innerHTML = '<i class="fas fa-plus"></i> إضافة طفل';
+            document.getElementById('childName').value = '';
+            document.getElementById('childAge').value = '';
+            document.getElementById('childAddress').value = '';
+            document.getElementById('childPhone').value = '';
+            document.getElementById('childWhatsapp').value = '';
+            document.getElementById('childFather').value = '';
+            document.getElementById('childMother').value = '';
+            document.getElementById('childNotes').value = '';
+            document.getElementById('childPhotoPreview').src = 'https://via.placeholder.com/100';
+            document.getElementById('childModal').classList.add('active');
+        }
+
+        function editCurrentChild() {
+            closeModal('childDetailsModal');
+            const child = Store.children.find(c => c.id === Store.currentChildId);
+            if (!child) return;
+
+            document.getElementById('childModalTitle').innerHTML = '<i class="fas fa-edit"></i> تعديل بيانات الطفل';
+            document.getElementById('childName').value = child.name;
+            document.getElementById('childAge').value = child.age;
+            document.getElementById('childAddress').value = child.address;
+            document.getElementById('childPhone').value = child.phone;
+            document.getElementById('childWhatsapp').value = child.whatsapp;
+            document.getElementById('childFather').value = child.father;
+            document.getElementById('childMother').value = child.mother;
+            document.getElementById('childNotes').value = child.notes;
+            document.getElementById('childPhotoPreview').src = child.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(child.name) + '&background=1e3a5f&color=fff&size=128';
+            document.getElementById('childModal').classList.add('active');
+        }
+
+        function saveChild() {
+            const name = document.getElementById('childName').value;
+            if (!name) {
+                showToast('يرجى إدخال اسم الطفل');
+                return;
+            }
+
+            const childData = {
+                name: name,
+                age: parseInt(document.getElementById('childAge').value) || 0,
+                address: document.getElementById('childAddress').value,
+                phone: document.getElementById('childPhone').value,
+                whatsapp: document.getElementById('childWhatsapp').value,
+                father: document.getElementById('childFather').value,
+                mother: document.getElementById('childMother').value,
+                notes: document.getElementById('childNotes').value,
+                photo: document.getElementById('childPhotoPreview').src.includes('placeholder') ? null : document.getElementById('childPhotoPreview').src,
+                lat: 36.7538 + (Math.random() - 0.5) * 0.1,
+                lng: 3.0588 + (Math.random() - 0.5) * 0.1
+            };
+
+            if (Store.currentChildId) {
+                const index = Store.children.findIndex(c => c.id === Store.currentChildId);
+                Store.children[index] = { ...Store.children[index], ...childData };
+                showToast('تم تحديث البيانات بنجاح');
+            } else {
+                const newId = Math.max(...Store.children.map(c => c.id), 0) + 1;
+                Store.children.push({ id: newId, ...childData });
+                showToast('تم إضافة الطفل بنجاح');
+            }
+
+            closeModal('childModal');
+            saveToLocalStorage();
+            if (document.querySelector('.nav-item.active')?.dataset.page === 'children') {
+                renderChildren(document.getElementById('mainContent'));
+            }
+        }
+
+        function deleteChild(id) {
+            if (confirm('هل أنت متأكد من حذف هذا الطفل؟')) {
+                Store.children = Store.children.filter(c => c.id !== id);
+                saveToLocalStorage();
+                renderChildren(document.getElementById('mainContent'));
+                showToast('تم الحذف بنجاح');
+            }
+        }
+
+        function showChildDetails(id) {
+            Store.currentChildId = id;
+            const child = Store.children.find(c => c.id === id);
+            if (!child) return;
+
+            const showPhone = Store.fieldVisibility.phone;
+            const showAddress = Store.fieldVisibility.address;
+            const showParents = Store.fieldVisibility.parents;
+
+            document.getElementById('childDetailsBody').innerHTML = `
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <img src="${child.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(child.name) + '&background=1e3a5f&color=fff&size=200'}" 
+                         style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary);">
+                    <h3 style="margin-top: 16px; font-size: 1.3rem;">${child.name}</h3>
+                    <span class="badge badge-success">${child.age} سنوات</span>
+                </div>
+
+                <div style="display: grid; gap: 12px;">
+                    ${showAddress ? `
+                        <div class="card" style="margin-bottom: 0;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="card-icon bg-primary" style="width: 40px; height: 40px; font-size: 1rem;"><i class="fas fa-map-marker-alt"></i></div>
+                                <div>
+                                    <div style="font-weight: 700;">العنوان</div>
+                                    <div style="color: var(--text-light); font-size: 0.9rem;">${child.address}</div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${showPhone ? `
+                        <div class="card" style="margin-bottom: 0;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="card-icon bg-success" style="width: 40px; height: 40px; font-size: 1rem;"><i class="fas fa-phone"></i></div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 700;">رقم الهاتف</div>
+                                    <div style="color: var(--text-light); font-size: 0.9rem;">${child.phone}</div>
+                                </div>
+                                <a href="tel:${child.phone}" class="child-action-btn bg-primary" style="text-decoration: none;">
+                                    <i class="fas fa-phone"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="card" style="margin-bottom: 0;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="card-icon bg-success" style="width: 40px; height: 40px; font-size: 1rem; background: #25d366;"><i class="fab fa-whatsapp"></i></div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 700;">واتساب</div>
+                                    <div style="color: var(--text-light); font-size: 0.9rem;">${child.whatsapp}</div>
+                                </div>
+                                <a href="https://wa.me/${child.whatsapp.replace(/^0/, '+213')}" class="child-action-btn bg-success" style="text-decoration: none; background: #25d366;">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${showParents ? `
+                        <div class="card" style="margin-bottom: 0;">
+                            <div style="font-weight: 700; margin-bottom: 12px;"><i class="fas fa-users"></i> معلومات الوالدين</div>
+                            <div style="display: grid; gap: 8px;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--text-light);">الأب:</span>
+                                    <span style="font-weight: 600;">${child.father}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--text-light);">الأم:</span>
+                                    <span style="font-weight: 600;">${child.mother}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${child.notes ? `
+                        <div class="card" style="margin-bottom: 0;">
+                            <div style="font-weight: 700; margin-bottom: 8px;"><i class="fas fa-sticky-note"></i> ملاحظات</div>
+                            <div style="color: var(--text-light); background: var(--bg); padding: 12px; border-radius: var(--radius-sm);">
+                                ${child.notes}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                ${Store.currentRole === 'admin' || Store.currentRole === 'supervisor' || Store.currentRole === 'dev' ? `
+                    <button class="btn btn-danger" style="margin-top: 20px;" onclick="deleteChild(${child.id}); closeModal('childDetailsModal');">
+                        <i class="fas fa-trash"></i> حذف الطفل
+                    </button>
+                ` : ''}
+            `;
+
+            document.getElementById('childDetailsModal').classList.add('active');
+        }
+
+        function previewChildPhoto(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById('childPhotoPreview').src = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // ===================== ROUTES & MAP =====================
+        function renderRoutes(container) {
+            container.innerHTML = `
+                <div class="section-title"><i class="fas fa-route"></i> الطرق المسجلة</div>
+                ${Store.routes.map(route => `
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">${route.name}</div>
+                                <div style="color: var(--text-light); font-size: 0.85rem; margin-top: 4px;">
+                                    <i class="fas fa-map-marker-alt"></i> ${route.waypoints.length} نقاط
+                                </div>
+                            </div>
+                            <div class="card-icon bg-primary"><i class="fas fa-route"></i></div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" style="flex: 1;" onclick="navigateTo('map')">
+                                <i class="fas fa-map"></i> عرض الخريطة
+                            </button>
+                            <button class="btn btn-secondary" style="flex: 1;" onclick="shareRoute(${route.id})">
+                                <i class="fas fa-share-alt"></i> مشاركة
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
+
+                <div class="section-title"><i class="fas fa-plus-circle"></i> إنشاء طريق جديد</div>
+                <div class="card">
+                    <div class="form-group">
+                        <label class="form-label">اسم الطريق</label>
+                        <input type="text" class="form-input" id="newRouteName" placeholder="مثال: طريق حي النصر">
+                    </div>
+                    <button class="btn btn-success" onclick="createRoute()">
+                        <i class="fas fa-plus"></i> إنشاء طريق
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderMap(container) {
+            container.innerHTML = `
+                <div class="map-container">
+                    <div class="map-placeholder">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <div style="font-weight: 700;">الخريطة التفاعلية</div>
+                        <div style="font-size: 0.85rem; opacity: 0.7;">يتطلب مفتاح Google Maps API</div>
+                    </div>
+                </div>
+
+                <div class="section-title"><i class="fas fa-map-marker-alt"></i> مواقع الأطفال</div>
+                ${Store.children.map(child => `
+                    <div class="card">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <img src="${child.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(child.name) + '&background=1e3a5f&color=fff&size=128'}" 
+                                 style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 700;">${child.name}</div>
+                                <div style="color: var(--text-light); font-size: 0.85rem;">
+                                    <i class="fas fa-map-pin"></i> ${child.address}
+                                </div>
+                            </div>
+                            <a href="https://www.google.com/maps?q=${child.lat},${child.lng}" target="_blank" class="child-action-btn bg-primary" style="text-decoration: none;">
+                                <i class="fas fa-location-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                `).join('')}
+
+                <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white;">
+                    <div style="font-weight: 700; margin-bottom: 12px;"><i class="fas fa-lightbulb"></i> نصائح السلامة</div>
+                    <div style="display: grid; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                            <i class="fas fa-phone-alt"></i>
+                            <span>اضغط على الرقم للاتصال المباشر - لا حاجة للنسخ</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                            <i class="fas fa-route"></i>
+                            <span>اتبع الطريق المسجل لتجنب الضياع</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                            <i class="fas fa-clock"></i>
+                            <span>تحقق من توقيت الوصول المتوقع</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTracking(container) {
+            container.innerHTML = `
+                <div class="map-container" style="height: 400px;">
+                    <div class="map-placeholder">
+                        <i class="fas fa-satellite-dish"></i>
+                        <div style="font-weight: 700;">تتبع مباشر للحافلة</div>
+                        <div style="font-size: 0.85rem; opacity: 0.7;">GPS Tracking</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-info-circle"></i> معلومات الرحلة</div>
+                    </div>
+                    <div style="display: grid; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: var(--bg); border-radius: 8px;">
+                            <span><i class="fas fa-bus"></i> السائق</span>
+                            <span style="font-weight: 700;">أحمد محمد</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: var(--bg); border-radius: 8px;">
+                            <span><i class="fas fa-clock"></i> وقت الانطلاق</span>
+                            <span style="font-weight: 700;">07:30 ص</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: var(--bg); border-radius: 8px;">
+                            <span><i class="fas fa-hourglass-half"></i> الوقت المتبقي</span>
+                            <span style="font-weight: 700; color: var(--accent);">5 دقائق</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="showToast('جاري تحديث الموقع...')">
+                    <i class="fas fa-sync-alt"></i> تحديث الموقع
+                </button>
+            `;
+        }
+
+        function renderContacts(container) {
+            container.innerHTML = `
+                <div class="section-title"><i class="fas fa-address-book"></i> جهات الاتصال</div>
+                ${Store.children.map(child => `
+                    <div class="card">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                            <img src="${child.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(child.name) + '&background=1e3a5f&color=fff&size=128'}" 
+                                 style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                            <div>
+                                <div style="font-weight: 700;">${child.name}</div>
+                                <div style="color: var(--text-light); font-size: 0.85rem;">${child.father}</div>
+                            </div>
+                        </div>
+                        <div class="contact-grid">
+                            <a href="tel:${child.phone}" class="contact-btn contact-call">
+                                <i class="fas fa-phone"></i> اتصال
+                            </a>
+                            <a href="https://wa.me/${child.whatsapp.replace(/^0/, '+213')}" class="contact-btn contact-whatsapp">
+                                <i class="fab fa-whatsapp"></i> واتساب
+                            </a>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function renderAttendance(container) {
+            container.innerHTML = `
+                <div class="section-title"><i class="fas fa-clipboard-check"></i> سجل الحضور</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent);">${Store.children.length}</div>
+                        <div class="stat-label">حاضرون</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--danger);">0</div>
+                        <div class="stat-label">غائبون</div>
+                    </div>
+                </div>
+                ${Store.children.map(child => `
+                    <div class="child-item">
+                        <img src="${child.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(child.name) + '&background=1e3a5f&color=fff&size=128'}" 
+                             class="child-avatar" alt="${child.name}">
+                        <div class="child-info">
+                            <div class="child-name">${child.name}</div>
+                            <div class="child-meta">${child.address}</div>
+                        </div>
+                        <span class="badge badge-success"><i class="fas fa-check"></i> حاضر</span>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // ===================== SETTINGS =====================
+        function renderSettings(container) {
+            container.innerHTML = `
+                <div class="section-title"><i class="fas fa-user-cog"></i> إعدادات الحساب</div>
+                <div class="card">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--primary); display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div style="font-weight: 700; margin-top: 12px;">${Store.currentUser?.name || 'مستخدم'}</div>
+                        <div style="color: var(--text-light); font-size: 0.85rem;">${getRoleLabel(Store.currentRole)}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">اسم المستخدم</label>
+                        <input type="text" class="form-input" value="${Store.currentUser?.username || ''}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">كلمة المرور الحالية</label>
+                        <input type="password" class="form-input" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">كلمة المرور الجديدة</label>
+                        <input type="password" class="form-input" placeholder="أدخل كلمة المرور الجديدة">
+                    </div>
+                    <button class="btn btn-primary" onclick="showToast('تم تحديث كلمة المرور')">
+                        <i class="fas fa-save"></i> حفظ التغييرات
+                    </button>
+                </div>
+
+                <div class="section-title"><i class="fas fa-bell"></i> الإشعارات</div>
+                <div class="card">
+                    <div class="toggle-group">
+                        <span class="toggle-label">إشعارات الوصول</span>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">إشعارات التأخير</span>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">صوت الإشعارات</span>
+                        <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                </div>
+
+                <div class="section-title"><i class="fas fa-database"></i> المزامنة</div>
+                <div class="card">
+                    <div style="display: grid; gap: 10px;">
+                        <button class="btn btn-primary" onclick="syncToCloud()">
+                            <i class="fas fa-cloud-upload-alt"></i> مزامنة مع السحابة
+                        </button>
+                        <button class="btn btn-secondary" onclick="syncToLocal()">
+                            <i class="fas fa-save"></i> حفظ محلياً
+                        </button>
+                        <button class="btn btn-outline" onclick="loadFromLocalStorage(); showToast('تم استعادة البيانات')">
+                            <i class="fas fa-download"></i> استعادة البيانات
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn btn-danger" style="margin-top: 20px;" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </button>
+            `;
+        }
+
+        function getRoleLabel(role) {
+            const labels = { admin: 'مدير', supervisor: 'مشرف', driver: 'سائق', parent: 'ولي أمر', dev: 'مطور' };
+            return labels[role] || role;
+        }
+
+        // ===================== DEV PANEL =====================
+        function showDevPanel() {
+            if (Store.currentRole !== 'dev' && Store.currentRole !== 'admin') {
+                showToast('غير مصرح لك بالوصول');
+                return;
+            }
+            document.getElementById('devPanelModal').classList.add('active');
+        }
+
+        function handleLogoChange(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    Store.branding.logo = e.target.result;
+                    updateBranding();
+                    showToast('تم تحديث الشعار');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function toggleField(el, field) {
+            el.classList.toggle('active');
+            Store.fieldVisibility[field] = el.classList.contains('active');
+            saveToLocalStorage();
+        }
+
+        function saveDevSettings() {
+            Store.branding.name = document.getElementById('devNurseryName').value;
+            Store.branding.primaryColor = document.getElementById('devPrimaryColor').value;
+            Store.branding.secondaryColor = document.getElementById('devSecondaryColor').value;
+            updateBranding();
+            saveToLocalStorage();
+            showToast('تم حفظ الإعدادات');
+            closeModal('devPanelModal');
+        }
+
+        function addNewUser() {
+            const name = document.getElementById('newUserName').value;
+            const role = document.getElementById('newUserRole').value;
+            const pass = document.getElementById('newUserPass').value;
+
+            if (!name || !pass) {
+                showToast('أكمل جميع الحقول');
+                return;
+            }
+
+            const newId = Math.max(...Store.users.map(u => u.id), 0) + 1;
+            Store.users.push({
+                id: newId,
+                username: name.toLowerCase().replace(/\s/g, ''),
+                password: pass,
+                role: role,
+                name: name
+            });
+
+            saveToLocalStorage();
+            showToast('تم إضافة المستخدم');
+            document.getElementById('newUserName').value = '';
+            document.getElementById('newUserPass').value = '';
+        }
+
+        // ===================== EXCEL =====================
+        function exportToExcel() {
+            let csv = 'ID,Name,Age,Address,Phone,WhatsApp,Father,Mother,Notes\n';
+            Store.children.forEach(c => {
+                csv += `${c.id},"${c.name}",${c.age},"${c.address}","${c.phone}","${c.whatsapp}","${c.father}","${c.mother}","${c.notes}"\n`;
+            });
+
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'children_export_' + new Date().toISOString().split('T')[0] + '.csv';
+            link.click();
+            showToast('تم تصدير البيانات');
+        }
+
+        function importFromExcel(input) {
+            if (!input.files || !input.files[0]) return;
+
+            const reader = new FileReader();
+            reader.onload = e => {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                let imported = 0;
+
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(',');
+                    if (cols.length >= 3 && cols[1]) {
+                        const newId = Math.max(...Store.children.map(c => c.id), 0) + 1;
+                        Store.children.push({
+                            id: newId,
+                            name: cols[1].replace(/"/g, ''),
+                            age: parseInt(cols[2]) || 0,
+                            address: (cols[3] || '').replace(/"/g, ''),
+                            phone: (cols[4] || '').replace(/"/g, ''),
+                            whatsapp: (cols[5] || '').replace(/"/g, ''),
+                            father: (cols[6] || '').replace(/"/g, ''),
+                            mother: (cols[7] || '').replace(/"/g, ''),
+                            notes: (cols[8] || '').replace(/"/g, ''),
+                            photo: null,
+                            lat: 36.7538 + (Math.random() - 0.5) * 0.1,
+                            lng: 3.0588 + (Math.random() - 0.5) * 0.1
+                        });
+                        imported++;
+                    }
+                }
+
+                saveToLocalStorage();
+                showToast(`تم استيراد ${imported} طفل`);
+                if (document.querySelector('.nav-item.active')?.dataset.page === 'children') {
+                    renderChildren(document.getElementById('mainContent'));
+                }
+            };
+            reader.readAsText(input.files[0]);
+        }
+
+        // ===================== SYNC =====================
+        function syncToCloud() {
+            showToast('جاري المزامنة مع Supabase...');
+            setTimeout(() => {
+                showToast('تمت المزامنة بنجاح (وضع تجريبي)');
+            }, 1500);
+        }
+
+        function syncToLocal() {
+            saveToLocalStorage();
+            showToast('تم الحفظ في الجهاز');
+        }
+
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('nurseryApp_data', JSON.stringify({
+                    children: Store.children,
+                    users: Store.users,
+                    routes: Store.routes,
+                    branding: Store.branding,
+                    fieldVisibility: Store.fieldVisibility
+                }));
+            } catch (e) {
+                console.error('Storage error:', e);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const data = JSON.parse(localStorage.getItem('nurseryApp_data'));
+                if (data) {
+                    Store.children = data.children || Store.children;
+                    Store.users = data.users || Store.users;
+                    Store.routes = data.routes || Store.routes;
+                    Store.branding = data.branding || Store.branding;
+                    Store.fieldVisibility = data.fieldVisibility || Store.fieldVisibility;
+                }
+            } catch (e) {
+                console.error('Load error:', e);
+            }
+        }
+
+        // ===================== UTILITIES =====================
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function toggleNotifications() {
+            showToast('لديك ' + Store.notifications.filter(n => !n.read).length + ' إشعارات جديدة');
+        }
+
+        function startRoute() {
+            showToast('✅ تم بدء الرحلة - تتبع GPS مفعل');
+        }
+
+        function endRoute() {
+            showToast('🛑 تم إنهاء الرحلة');
+        }
+
+        function shareRoute(routeId) {
+            const route = Store.routes.find(r => r.id === routeId);
+            if (route && navigator.share) {
+                navigator.share({
+                    title: route.name,
+                    text: 'مشاركة طريق: ' + route.name,
+                    url: window.location.href
+                });
+            } else {
+                showToast('تم نسخ معلومات الطريق');
+            }
+        }
+
+        function createRoute() {
+            const name = document.getElementById('newRouteName').value;
+            if (!name) {
+                showToast('أدخل اسم الطريق');
+                return;
+            }
+            const newId = Math.max(...Store.routes.map(r => r.id), 0) + 1;
+            Store.routes.push({
+                id: newId,
+                name: name,
+                waypoints: Store.children.map(c => ({ lat: c.lat, lng: c.lng })),
+                driverId: Store.currentUser?.id
+            });
+            saveToLocalStorage();
+            showToast('تم إنشاء الطريق');
+            renderRoutes(document.getElementById('mainContent'));
+        }
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', e => {
+                if (e.target === overlay) overlay.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
